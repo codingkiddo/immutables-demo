@@ -1,5 +1,9 @@
 package com.codingkiddo.immutables_demo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +37,7 @@ public final class ImmutablePerson implements Person {
   /**
    * @return The value of the {@code name} attribute
    */
+  @JsonProperty(value = "name", required = true)
   @Override
   public String name() {
     return name;
@@ -41,6 +46,7 @@ public final class ImmutablePerson implements Person {
   /**
    * @return The value of the {@code age} attribute
    */
+  @JsonProperty(value = "age")
   @Override
   public int age() {
     return age;
@@ -107,6 +113,54 @@ public final class ImmutablePerson implements Person {
         + "name=" + name
         + ", age=" + age
         + "}";
+  }
+
+  /**
+   * Utility type used to correctly read immutable object from JSON representation.
+   * @deprecated Do not use this type directly, it exists only for the <em>Jackson</em>-binding infrastructure
+   */
+  @Generated(from = "Person", generator = "Immutables")
+  @Deprecated
+  @JsonDeserialize
+  static final class Json implements Person {
+    @JsonIgnore String _name;
+    @JsonIgnore int _age;
+    @JsonIgnore boolean ageIsSet;
+
+    @JsonProperty(value = "name", required = true)
+    public void setName(String name) {
+      this._name = name;
+    }
+
+    @JsonProperty(value = "age")
+    public void setAge(int age) {
+      this._age = age;
+      this.ageIsSet = true;
+    }
+
+    @Override
+    public String name() { throw new UnsupportedOperationException(); }
+
+    @Override
+    public int age() { throw new UnsupportedOperationException(); }
+  }
+
+  /**
+   * @param json A JSON-bindable data structure
+   * @return An immutable value type
+   * @deprecated Do not use this method directly, it exists only for the <em>Jackson</em>-binding infrastructure
+   */
+  @Deprecated
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  static ImmutablePerson fromJson(Json json) {
+    ImmutablePerson.Builder builder = ImmutablePerson.builder();
+    if (json._name != null) {
+      builder.name(json._name);
+    }
+    if (json.ageIsSet) {
+      builder.age(json._age);
+    }
+    return builder.build();
   }
 
   /**
@@ -178,6 +232,7 @@ public final class ImmutablePerson implements Person {
      * @param name The value for name 
      * @return {@code this} builder for use in a chained invocation
      */
+    @JsonProperty(value = "name", required = true)
     public final Builder name(String name) {
       this.name = Objects.requireNonNull(name, "name");
       initBits &= ~INIT_BIT_NAME;
@@ -190,6 +245,7 @@ public final class ImmutablePerson implements Person {
      * @param age The value for age 
      * @return {@code this} builder for use in a chained invocation
      */
+    @JsonProperty(value = "age")
     public final Builder age(int age) {
       this.age = age;
       optBits |= OPT_BIT_AGE;
